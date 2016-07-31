@@ -93,11 +93,11 @@
 		tapno:function(){sout('点击NO',1);udo();tp('.prt-no')},
 		taphigh:function(){sout('点击HIGH',1);udo();tp('.prt-double-select[select=high]')},
 		taplow:function(){sout('点击LOW',1);udo();tp('.prt-double-select[select=low]')},
-		keep1pos:function(){setTimeout(sout('保持第1张卡',1),Math.random()*600);ce('set1');ce2(1)},
-		keep2pos:function(){setTimeout(sout('保持第2张卡',1),Math.random()*600);ce('set2');ce2(2)},
-		keep3pos:function(){setTimeout(sout('保持第3张卡',1),Math.random()*600);ce('set3');ce2(3)},
-		keep4pos:function(){setTimeout(sout('保持第4张卡',1),Math.random()*600);ce('set4');ce2(4)},
-		keep5pos:function(){setTimeout(sout('保持第5张卡',1),Math.random()*600);ce('set5');ce2(5)}
+		keep1pos:function(){setTimeout(sout('保持第1张卡',1),Math.round(Math.random()*600));ce('set1');ce2(1)},
+		keep2pos:function(){setTimeout(sout('保持第2张卡',1),Math.round(Math.random()*600));ce('set2');ce2(2)},
+		keep3pos:function(){setTimeout(sout('保持第3张卡',1),Math.round(Math.random()*600));ce('set3');ce2(3)},
+		keep4pos:function(){setTimeout(sout('保持第4张卡',1),Math.round(Math.random()*600));ce('set4');ce2(4)},
+		keep5pos:function(){setTimeout(sout('保持第5张卡',1),Math.round(Math.random()*600));ce('set5');ce2(5)}
 	}
 	,ai = {
 		keep:function(){
