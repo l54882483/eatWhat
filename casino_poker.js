@@ -286,7 +286,7 @@
 						sout('桌上出现的卡片为:'+read.deck().join(','),2);
 						var 要保持的卡片位置 = ai.keep();
 						for(var k in 要保持的卡片位置){
-							setTimeout(act['keep'+k+'pos'](),(Math.random()+1)*300);
+							setTimeout("act['keep'+k+'pos']()",(Math.random()+1)*300);
 						}
 						act.tapok();
 						sm.deck++;
