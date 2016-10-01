@@ -1,30 +1,26 @@
-(function(){
-	var za
-	,ds = false
-	,et = 'ontouchstart' in window ? 'touchstart' : 'mousedown'
-	,md = {ver:1,pf:0,st1:null,st2:null}
-	,nl = '\n'
-	,zc = ['color:#000000','color:#307730','color:#AAAAAA','color:white; background-color:#77A8F3','color:white; background-color:#0055CC','color:white; background-color:#B03939']
-	,sout = function(inf,sty){if(!av.是否在控制台输出信息){sout=function(){};return}console.info('%c'+inf,zc[~~sty])}
-	,tp = function(sel){$(sel).trigger('tap')}
-	,tz = function(sel){var _=$('div',sel),__=_.size()-1,___=0;_.each(function(i,____){___+=~~____.className.split('_')[1]*Math.pow(10,__-i)});return ___}
-	,ce = function(en){$('#canv').trigger(en)}
-	,ce2 = function(b){exportRoot["card_" + b + "_select"]=1}
-	,pc = function(fn){return Math.round(fn*10000)/100+'%'}
-	,iv = function(sel){return $(sel).is(':visible')}
-	,ih = function(tex){return $('.prt-navigation').text()==tex}
-	,sstat = function(){var _=[],__=read.medal();for(var k in st){_.push(k+': '+st[k])}_.push('现在游戏筹码: '+__);_.push('累计筹码收益: '+(__-st.初始游戏筹码));console.info(_.join(''+nl+''))}
-	,gsay = function(sor,sow){if(sm.gchoice!=''){if((sm.gchoice=='大' && read.doub(1).点数 < read.doub(2).点数) || (sm.gchoice!='大' && read.doub(1).点数 > read.doub(2).点数)){st.薛定谔猜对次数++;sout(sor)}else{st.薛定谔猜错次数++;sout(sow)}sm.gchoice=''}}
-	,sm = {
-		running:false,
-		timeout:0,
-		deck:0,
-		doubleup:0,
-		doubletimes:0,
-		lastchoice:'',
-		gchoice:''
+(function(参数,使用模式){
+	var 计时器
+	,模式
+	,停止时间
+	,样式定义 = ['color:#000000','color:#307730','color:#AAAAAA','color:white; background-color:#77A8F3','color:white; background-color:#0055CC','color:white; background-color:#B03939']
+	,显示信息 = function(信息,样式){if(!参数.是否在控制台输出信息){显示信息=function(){};return}console.info('%c'+信息,样式定义[~~样式])}
+	,碰触元素 = function(选择器){$(选择器).trigger('tap')}
+	,图字转换 = function(选择器){var _=$('div',选择器),__=_.size()-1,___=0;_.each(function(i,____){___+=~~____.className.split('_')[1]*Math.pow(10,__-i)});return ___}
+	,画布事件 = function(事件名){$('#canv').trigger(事件名)}
+	,画布事件2 = function(事件名){exportRoot["card_" + 事件名 + "_select"]=1}
+	,转化百分数 = function(浮点数){return Math.round(浮点数*10000)/100+'%'}
+	,是否显示 = function(选择器){return $(选择器).is(':visible')}
+	,显示情况 = function(){var _=[],__=查阅.我的筹码();for(var k in 情况){_.push(k+': '+情况[k])}_.push('现在游戏筹码: '+__);_.push('累计筹码收益: '+(__-情况.初始游戏筹码));console.info(_.join('\n'))}
+	,薛定谔的结论 = function(猜对时说,猜错时说){if(状态机.薛定谔的选择!=''){if((状态机.薛定谔的选择=='大' && 查阅.双倍卡片(1).点数 < 查阅.双倍卡片(2).点数) || (状态机.薛定谔的选择!='大' && 查阅.双倍卡片(1).点数 > 查阅.双倍卡片(2).点数)){情况.薛定谔猜对次数++;显示信息(猜对时说)}else{情况.薛定谔猜错次数++;显示信息(猜错时说)}状态机.薛定谔的选择=''}}
+	,状态机 = {
+		运行中:false,
+		牌桌阶段:0,
+		双倍阶段:0,
+		双倍累积:0,
+		最后的选择:'',
+		薛定谔的选择:''
 	}
-	,st = {
+	,情况 = {
 		脚本启动时间:new Date().toLocaleString(),
 		最后一次操作:'未操作',
 		每局筹码:0,
@@ -37,492 +33,414 @@
 		薛定谔猜错次数:0,
 		初始游戏筹码:0
 	}
-	,dbg = function(){console.debug(sm)}
-	,gdeck = function(){if(check.canstart()){return [0,0]}else if(check.canok()){return [1,0]}else if(check.candoubleup()){return [2,0]}else if(check.canhighlow()){return [3,0]}else if(check.canyesno()){return [3,1]}}
-	,udeck = function(){var _=gdeck();if(_){sm.deck=_[0];sm.doubleup=_[1]}else{sout('Oh my god!你可能不在打牌界面。',2)}}
-	,udo = function(){st.最后一次操作=new Date().toLocaleString()}
-	,rt = {}
-	,gsr = function(){for(var p=2;p<=14;p++){
-		rt[p]={小:(p-2)/12,大:1-(p-2)/12}
+	,更新操作记录 = function(){情况.最后一次操作=new Date().toLocaleString()}
+	,概率 = {}
+	,生成概率 = function(){for(var 点数=2;点数<=14;点数++){
+		概率[点数]={小:(点数-2)/12,大:1-(点数-2)/12}
 	}}
-	,sp = {过期时间:0,数据:{}}
-	,sp2 = {过期时间:0,数据:[]}
-	,ssamp = function(){var _={},_2={};for(var k in sp.数据){var __=sp.数据[k],___=sampr(k),_____={};for(var k2 in __){_____[k2]=__[k2]}_____.可信度=pc(___.可信度),_____.出大概率=pc(___.大),_____.出大基准=pc(rt[k].大),_____.出小概率=pc(___.小),_____.出小基准=pc(rt[k].小);_[k]=_____}for(var i=0;i<sp2.数据.length;i++){_2[i]={出小次数:sp2.数据[i][0],出大次数:sp2.数据[i][1],正确次数:sp2.数据[i][2],错误次数:sp2.数据[i][3]}}console.info('双卡模式:');console.table(_);console.info('无限模式:');console.table(_2);return '样本过期时间: '+new Date(sp.过期时间).toLocaleString()}
-	,gsamp = function(p){sp.数据[p]={总:0,大:0,小:0,平:0}}
-	,gls = function(){var _=localStorage['wg_casino_poker_samples'];if(_){sp=JSON.parse(_)}}
-	,gls2 = function(){var _=localStorage['wg_casino_poker_samples2'];if(_){sp2=JSON.parse(_)}}
-	,sls = function(){localStorage['wg_casino_poker_samples']=JSON.stringify(sp)}
-	,sls2 = function(){localStorage['wg_casino_poker_samples2']=JSON.stringify(sp2)}
-	,gmd = function(){var _=localStorage['wg_casino_poker_config'];if(_){_=JSON.parse(_);if(_.ver==md.ver){md=_;return;}}smd()}
-	,smd = function(){localStorage['wg_casino_poker_config']=JSON.stringify(md)}
-	,cst = function(){if(new Date().getTime()>sp.过期时间){var _=new Date();if(_.getHours()>=av.收集的样本在每天几点时过期){_=new Date(_.getTime()+24*60*60*1000)}_.setHours(av.收集的样本在每天几点时过期),_.setMinutes(0),_.setSeconds(0),_.setMilliseconds(0);sp={过期时间:_.getTime(),数据:{}}}}
-	,cst2 = function(){if(new Date().getTime()>sp2.过期时间){var _=new Date();if(_.getHours()>=av.收集的样本在每天几点时过期){_=new Date(_.getTime()+24*60*60*1000)}_.setHours(av.收集的样本在每天几点时过期),_.setMinutes(0),_.setSeconds(0),_.setMilliseconds(0);sp2={过期时间:_.getTime(),数据:[]}}}
-	,rsamp = function(){if(check.issinglecard()){return};cst();var p=read.doub(1).点数,r=read.doub(2).点数;if(!(p in sp.数据)){gsamp(p)}sp.数据[p].总++;if(r>p){sp.数据[p].大++}else if(r<p){sp.数据[p].小++}else{sp.数据[p].平++}sls()}
-	,rsamp2 = function(r){if(!check.issinglecard()){return};cst2();var c=read.doub(1).点数,i=sm.doubletimes;if(!sp2.数据[i]){sp2.数据[i]=[0,0,0,0]}sp2.数据[i][r+1]++;if(c==99 || c==14){sls2();return}if(c>=8){sp2.数据[i][1]++}else{sp2.数据[i][0]++}sls2()}
-	,sampr = function(p){var _=sp.数据[p];if(_.总-_.平==0){return null}_=_.小/(_.总-_.平);return {小:_,大:1-_,可信度:Math.min(1,sp.数据[p].总/av.样本可信度分母)}}
-	,ca = function(raw,pos){
-		var _ = raw.split('_');
+	,样本 = {过期时间:0,数据:{}}
+	,显示样本 = function(){var _={};for(var k in 样本.数据){var __=样本.数据[k],___=样本概率(k),_____={};for(var k2 in __){_____[k2]=__[k2]}_____.可信度=转化百分数(___.可信度),_____.出大概率=转化百分数(___.大),_____.出大基准=转化百分数(概率[k].大),_____.出小概率=转化百分数(___.小),_____.出小基准=转化百分数(概率[k].小);_[k]=_____}console.table(_);return '样本过期时间: '+new Date(样本.过期时间).toLocaleString()}
+	,创建样本 = function(点数){样本.数据[点数]={总:0,大:0,小:0,平:0}}
+	,从本地存储中读取样本 = function(){var _=localStorage['wg_casino_poker_samples'];if(_){样本=JSON.parse(_)}}
+	,将样本保存到本地存储 = function(){localStorage['wg_casino_poker_samples']=JSON.stringify(样本)}
+	,检查样本过期 = function(){if(new Date().getTime()>样本.过期时间){var _=new Date();if(_.getHours()>=参数.收集的样本在每天几点时过期){_=new Date(_.getTime()+24*60*60*1000)}_.setHours(参数.收集的样本在每天几点时过期),_.setMinutes(0),_.setSeconds(0),_.setMilliseconds(0);样本={过期时间:_.getTime(),数据:{}}}}
+	,记录样本 = function(){检查样本过期();var 点数=查阅.双倍卡片(1).点数,结果=查阅.双倍卡片(2).点数;if(!(点数 in 样本.数据)){创建样本(点数)}样本.数据[点数].总++;if(结果>点数){样本.数据[点数].大++}else if(结果<点数){样本.数据[点数].小++}else{样本.数据[点数].平++}将样本保存到本地存储()}
+	,样本概率 = function(点数){var _=样本.数据[点数];if(_.总-_.平==0){return null}_=_.小/(_.总-_.平);return {小:_,大:1-_,可信度:Math.min(1,样本.数据[点数].总/参数.样本可信度分母)}}
+	,卡片类 = function(原始数据,位置){
+		var _ = 原始数据.split('_');
 		this.花色 = ~~_[0];
 		this.点数 = ~~_[1];
 		if(this.点数==1){this.点数=14}
-		this.位置 = pos+1;
+		this.位置 = 位置+1;
 	}
-	,co = {
-		conv:function(raw){return raw.map(function(v,i){return new ca(v,i)})},
-		sort:function(ar,pr){for(var i=0,l=ar.length;i<l;i++){for(var j=i+1;j<l;j++){if(ar[i][pr]>ar[j][pr]){var _=ar[j];ar[j]=ar[i];ar[i]=_}}}}
+	,牌组操作 = {
+		转换:function(原始数组){return 原始数组.map(function(v,i){return new 卡片类(v,i)})},
+		排序:function(牌组,属性){for(var i=0,l=牌组.length;i<l;i++){for(var j=i+1;j<l;j++){if(牌组[i][属性]>牌组[j][属性]){var _=牌组[j];牌组[j]=牌组[i];牌组[i]=_}}}}
 	}
-	,read = {
-		deck:function(){return co.conv(cards_1_Array)},
-		doub:function(i){return new ca(window['doubleUp_card_'+i],0)},
-		bet:function(){return tz('.prt-bet')},
-		medal:function(){return tz('.prt-medal')}
+	,查阅 = {
+		牌桌卡片:function(){return 牌组操作.转换(cards_1_Array)},
+		双倍卡片:function(i){return new 卡片类(window['doubleUp_card_'+i],0)},
+		桌上筹码:function(){return 图字转换('.prt-bet')},
+		我的筹码:function(){return 图字转换('.prt-medal')}
 	}
-	,check = {
-		canstart:function(){return iv('.prt-start')},
-		canok:function(){return iv('.prt-ok')},
-		canyesno:function(){return iv('.prt-yes')},
-		canhighlow:function(){return iv('.prt-double-select')},
-		candoubleup:function(){return ih('ダブルアップに挑戦しますか？')},
-		issinglecard:function(){return Game.view.doubleKind=='1'}
+	,判断 = {
+		可START:function(){return 是否显示('.prt-start')},
+		可OK:function(){return 是否显示('.prt-ok')},
+		可YESNO:function(){return 是否显示('.prt-yes')},
+		可HIGHLOW:function(){return 是否显示('.prt-double-select')},
 	}
-	,act = {
-		tapstart:function(){sout('点击START',1);udo();tp('.prt-start')},
-		tapok:function(){sout('点击OK',1);udo();tp('.prt-ok')},
-		tapyes:function(){sout('点击YES',1);udo();tp('.prt-yes')},
-		tapno:function(){sout('点击NO',1);udo();tp('.prt-no')},
-		taphigh:function(){sout('点击HIGH',1);udo();tp('.prt-double-select[select=high]')},
-		taplow:function(){sout('点击LOW',1);udo();tp('.prt-double-select[select=low]')},
-		keep1pos:function(){sout('保持第1张卡',1);ce('set1');ce2(1)},
-		keep2pos:function(){sout('保持第2张卡',1);ce('set2');ce2(2)},
-		keep3pos:function(){sout('保持第3张卡',1);ce('set3');ce2(3)},
-		keep4pos:function(){sout('保持第4张卡',1);ce('set4');ce2(4)},
-		keep5pos:function(){sout('保持第5张卡',1);ce('set5');ce2(5)}
+	,动作 = {
+		点击START:function(){显示信息('点击START',1);更新操作记录();碰触元素('.prt-start')},
+		点击OK:function(){显示信息('点击OK',1);更新操作记录();碰触元素('.prt-ok')},
+		点击YES:function(){显示信息('点击YES',1);更新操作记录();碰触元素('.prt-yes')},
+		点击NO:function(){显示信息('点击NO',1);更新操作记录();碰触元素('.prt-no')},
+		点击HIGH:function(){显示信息('点击HIGH',1);更新操作记录();碰触元素('.prt-double-select[select=high]')},
+		点击LOW:function(){显示信息('点击LOW',1);更新操作记录();碰触元素('.prt-double-select[select=low]')},
+		保持第1张卡:function(){显示信息('保持第1张卡',1);画布事件('set1');画布事件2(1)},
+		保持第2张卡:function(){显示信息('保持第2张卡',1);画布事件('set2');画布事件2(2)},
+		保持第3张卡:function(){显示信息('保持第3张卡',1);画布事件('set3');画布事件2(3)},
+		保持第4张卡:function(){显示信息('保持第4张卡',1);画布事件('set4');画布事件2(4)},
+		保持第5张卡:function(){显示信息('保持第5张卡',1);画布事件('set5');画布事件2(5)}
 	}
-	,ai = {
-		keep:function(){
-			var ar = read.deck();
-			co.sort(ar,'点数');
+	,人工知能 = {
+		保持卡片:function(){
+			var 牌组 = 查阅.牌桌卡片();
+			牌组操作.排序(牌组,'点数');
 			//如果有王牌，保持王牌；如果有对子或以上，保持对子；如果都没有，则先检查是否顺子，是则保持，否则保持同花色最多的牌。
-			var kp={},jo=false,pa=0,mi=Infinity,ft=[],sl={};
-			for(var i=0,l=ar.length;i<l;i++){
-				if(ar[i].花色 in sl){
-					sl[ar[i].花色].push(ar[i].位置);
-				}else if(ar[i].花色==99){
-					jo = true;
-					kp[ar[i].位置]=true;
+			var 保持={},JOKER=false,对子=0,最小数=Infinity,顺子测试序列=[],同花={};
+			for(var i=0,l=牌组.length;i<l;i++){
+				if(牌组[i].花色 in 同花){
+					同花[牌组[i].花色].push(牌组[i].位置);
+				}else if(牌组[i].花色==99){
+					JOKER = true;
+					保持[牌组[i].位置]=true;
 				}else{
-					sl[ar[i].花色]=[ar[i].位置];
+					同花[牌组[i].花色]=[牌组[i].位置];
 				}
 
-				if(ar[i+1] && ar[i].点数==ar[i+1].点数){
-					kp[ar[i].位置]=true;
-					kp[ar[i+1].位置]=true;
-					pa++;
+				if(牌组[i+1] && 牌组[i].点数==牌组[i+1].点数){
+					保持[牌组[i].位置]=true;
+					保持[牌组[i+1].位置]=true;
+					对子++;
 				}
 
-				if(ar[i].点数!=99){
-					if(ar[i].点数<mi){
-						mi = ar[i].点数;
+				if(牌组[i].点数!=99){
+					if(牌组[i].点数<最小数){
+						最小数 = 牌组[i].点数;
 					}
-					ft[ar[i].点数] = ar[i].位置;
+					顺子测试序列[牌组[i].点数] = 牌组[i].位置;
 				}
 			}
-			if(pa==0){
-				var mslc=0,mslk=0,mcj=1,fsi=0,fei=0,mfc=0;
-				for(var k in sl){if(sl[k].length>mslc){mslc=sl[k].length;mslk=k}}
-				if(jo){mslc++;mcj++}
-				ft = ft.slice(mi);
-				for(var i=0,l=ft.length;i<l;i++){
-					if(ft[i]==undefined){continue}
-					var nj = 0, nl = 0;
+			if(对子==0){
+				var 最大同花数=0,最大同花色=0,顺子允许跳数=1,顺子启始下标=0,顺子结束下标=0,最大顺子长度=0;
+				for(var k in 同花){if(同花[k].length>最大同花数){最大同花数=同花[k].length;最大同花色=k}}
+				if(JOKER){最大同花数++;顺子允许跳数++}
+				顺子测试序列 = 顺子测试序列.slice(最小数);
+				for(var i=0,l=顺子测试序列.length;i<l;i++){
+					if(顺子测试序列[i]==undefined){continue}
+					var 当前跳数 = 0, 长度 = 0;
 					for(var j=i;j<l;j++){
-						if(nl>=5){
+						if(长度>=5){
 							break;
 						}
-						nl++;
-						if(ft[j]==undefined){
-							nj++;
-							if(nj>mcj){
+						长度++;
+						if(顺子测试序列[j]==undefined){
+							当前跳数++;
+							if(当前跳数>顺子允许跳数){
 								break;
 							}
 						}
 					}
-					if(nl-nj>mfc){
-						mfc=nl-nj;
-						fsi=i;
-						fei=nl+i;
+					if(长度-当前跳数>最大顺子长度){
+						最大顺子长度=长度-当前跳数;
+						顺子启始下标=i;
+						顺子结束下标=长度+i;
 					}
 				}
-				if(jo){mfc++}
-				sout('顺子'+mfc+'枚,同花'+mslc+'枚',2);
-				if(mfc==5 || mslc==5){
-					kp={1:true,2:true,3:true,4:true,5:true};
-				}else if(mslc>=mfc){
-					for(var i=0,l=sl[mslk].length;i<l;i++){kp[sl[mslk][i]]=true}
+				if(JOKER){最大顺子长度++}
+				显示信息('顺子'+最大顺子长度+'枚,同花'+最大同花数+'枚',2);
+				if(最大顺子长度==5 || 最大同花数==5){
+					保持={1:true,2:true,3:true,4:true,5:true};
+				}else if(最大同花数>=最大顺子长度){
+					for(var i=0,l=同花[最大同花色].length;i<l;i++){保持[同花[最大同花色][i]]=true}
 				}else{
-					for(var i=fsi;i<fei;i++){if(ft[i]!=undefined){kp[ft[i]]=true}}
+					for(var i=顺子启始下标;i<顺子结束下标;i++){if(顺子测试序列[i]!=undefined){保持[顺子测试序列[i]]=true}}
 				}
 			}
-			return kp;
+			return 保持;
 		},
-		hol:function(){
-			if(check.issinglecard()){
-				if(sp2[sm.doubletimes] && sp2.数据[sm.doubletimes][0]!=sp2.数据[sm.doubletimes][1]){
-					sout('过去的样本中,第'+sm.doubletimes+'次出现小的次数为'+sp2.数据[sm.doubletimes][0]+',出现大的次数为'+sp2.数据[sm.doubletimes][1],2);
-					return sp2.数据[sm.doubletimes][0]<sp2.数据[sm.doubletimes][1]?'HIGH':'LOW';
-				}
-				sout('过去没有样本,或样本中的大小概率一致,无参考价值',2);
-				return Math.random()>0.5?'HIGH':'LOW';
+		选择大小:function(){
+			var 卡片 = 查阅.双倍卡片(1);
+			显示信息('キター!你的对手是:'+卡片,4);
+			if(!(卡片.点数 in 样本.数据)){
+				创建样本(卡片.点数);
 			}
-			var card = read.doub(1);
-			sout('キター!你的对手是:'+card,4);
-			if(!(card.点数 in sp.数据)){
-				gsamp(card.点数);
-			}
-			if(av.薛定谔陪你玩){
-				var _=sampr(card.点数),__=rt[card.点数];
-				if(_ && sp.数据[card.点数].总>=av.模式设定[md.pf].样本收集几次后开始使用){
-					sout('样本可信度'+pc(_.可信度),2);
-					sout('出大概率'+pc(_.大)+', 基准'+pc(__.大),2);
-					sout('出小概率'+pc(_.小)+', 基准'+pc(__.小),2);
+			if(参数.薛定谔陪你玩){
+				var _=样本概率(卡片.点数),__=概率[卡片.点数];
+				if(_ && 样本.数据[卡片.点数].总>=参数.模式设定[使用模式].样本收集几次后开始使用){
+					显示信息('样本可信度'+转化百分数(_.可信度),2);
+					显示信息('出大概率'+转化百分数(_.大)+', 基准'+转化百分数(__.大),2);
+					显示信息('出小概率'+转化百分数(_.小)+', 基准'+转化百分数(__.小),2);
 					if(_.大==__.大){
 						var r = (_.大>_.小)?'大':'小';
-						sm.gchoice = r;
-						sout('完全的一致！薛定谔默默地选择了'+r);
+						状态机.薛定谔的选择 = r;
+						显示信息('完全的一致！薛定谔默默地选择了'+r);
 					}else{
 						var s = _.大*_.可信度 + __.大*(1-_.可信度);
-						if(Math.abs(s-__.大)>=0.02+0.016*Math.abs(card.点数-av.赌双倍的高低分水点数)){
+						if(Math.abs(s-__.大)>=0.02+0.016*Math.abs(卡片.点数-参数.赌双倍的高低分水点数)){
 							var r = (_.大>_.小)?'小':'大';
-							sm.gchoice = r;
-							sout('选择'+r+'！薛定谔毫不犹豫地作出了选择。');
+							状态机.薛定谔的选择 = r;
+							显示信息('选择'+r+'！薛定谔毫不犹豫地作出了选择。');
 						}else{
 							var r = (_.大>_.小)?'大':'小';
-							sm.gchoice = r;
-							sout('太难以决择了...薛定谔犹豫了一下，还是选胸'+r+'的吧。');
+							状态机.薛定谔的选择 = r;
+							显示信息('太难以决择了...薛定谔犹豫了一下，还是选胸'+r+'的吧。');
 						}
 					}
 				}else{
-					sout('我还没有准备好！薛定谔生气地拒绝作出选择。');
+					显示信息('我还没有准备好！薛定谔生气地拒绝作出选择。');
 				}
 			}
-			if(sp.数据[card.点数].总>=av.模式设定[md.pf].样本收集几次后开始使用 && sp.数据[card.点数].大!=sp.数据[card.点数].小){
-				if(sp.数据[card.点数].小>sp.数据[card.点数].大){
+			if(样本.数据[卡片.点数].总>=参数.模式设定[使用模式].样本收集几次后开始使用 && 样本.数据[卡片.点数].大!=样本.数据[卡片.点数].小){
+				if(样本.数据[卡片.点数].小>样本.数据[卡片.点数].大){
 					return 'LOW'
 				}
 				return 'HIGH'
 			}
-			if(card.点数>av.赌双倍的高低分水点数){
+			if(卡片.点数>参数.赌双倍的高低分水点数){
 				return 'LOW'
-			}else if(card.点数<av.赌双倍的高低分水点数){
+			}else if(卡片.点数<参数.赌双倍的高低分水点数){
 				return 'HIGH'
 			}
 			return Math.random()>0.5?'HIGH':'LOW';
 		},
-		yon:function(){
-			if(check.issinglecard()){
-				return true;
-			}
-			var card = read.doub(2);
-			if(av.模式设定[md.pf].允许一站到底 && read.medal()>=av.模式设定[md.pf].本钱大于多少后开始一站到底){
-				if(card.点数 in sp.数据){
-					if(sp.数据[card.点数].总>=av.模式设定[md.pf].样本收集多少份才允许一站到底){
-						sout('Fairy Fevering',2);
+		继续双倍:function(){
+			var 卡片 = 查阅.双倍卡片(2);
+			if(参数.模式设定[使用模式].允许一站到底 && 查阅.我的筹码()>=参数.模式设定[使用模式].本钱大于多少后开始一站到底){
+				if(卡片.点数 in 样本.数据){
+					if(样本.数据[卡片.点数].总>=参数.模式设定[使用模式].样本收集多少份才允许一站到底){
+						显示信息('Fairy Fevering',2);
 						return true
 					}
 				}
 			}
-			var nga = av.模式设定[md.pf].赌双倍遇到这些点数就不要继续;
-			if(sm.doubletimes>=av.模式设定[md.pf].赌双倍连续获胜几回合后进入谨慎状态 || read.bet()>=av.模式设定[md.pf].赌双倍赢筹码达到多少后进入谨慎状态){
-				sout('AT-Field FullPower',2);
-				nga = av.模式设定[md.pf].赌双倍谨慎状态下遇到这些点数就不要继续;
+			var 不继续数组 = 参数.模式设定[使用模式].赌双倍遇到这些点数就不要继续;
+			if(状态机.双倍累积>=参数.模式设定[使用模式].赌双倍连续获胜几回合后进入谨慎状态 || 查阅.桌上筹码()>=参数.模式设定[使用模式].赌双倍胜筹码达到多少后进入谨慎状态){
+				显示信息('AT-Field FullPower',2);
+				不继续数组 = 参数.模式设定[使用模式].赌双倍谨慎状态下遇到这些点数就不要继续;
 			}
-			for(var i=0,l=nga.length;i<l;i++){
-				if(card.点数==nga[i]){
-					sout('Oh my god!出现了不再继续的卡片:'+card,4);
+			for(var i=0,l=不继续数组.length;i<l;i++){
+				if(卡片.点数==不继续数组[i]){
+					显示信息('Oh my god! 出现了不再继续的卡片:'+卡片,4);
 					return false;
 				}
 			}
 			return true;
 		}
 	}
-	,uo = {
-		sleep:function(caf){
-			if(sm.timeout++>20){
-				location.reload()
-			}
-			var slt=av.模式设定[md.pf].点击动作延迟几秒+Math.random()*av.模式设定[md.pf].随机增加的延迟秒数;
-			sout('Relax! 我只睡'+Math.round(slt*10)/10+'秒',2);
-			$('.btn-usual-ok:visible').trigger('tap');
-			za=setTimeout(caf,slt*1000)
-		},
-		deck:function(){
-			switch(sm.deck){
+	,自动值守 = {
+		沉睡:function(呼出动作){var 沉睡时间=参数.模式设定[使用模式].点击动作延迟几秒+Math.random()*参数.模式设定[使用模式].随机增加的延迟秒数;显示信息('Relax! 我只睡'+Math.round(沉睡时间*10)/10+'秒',2);计时器=setTimeout(呼出动作,沉睡时间*1000)},
+		牌桌:function(){
+			switch(状态机.牌桌阶段){
 				case 0:
-					if(new Date().getTime()>=md.st1){
-						pgo();
+					if(new Date().getTime()>=停止时间){
+						预约启动();
 						return;
 					}
-					if(ds){
-						ds = false;
-						cmd1.text('启动');
-						cmd3.text('下局停');
-						stop();
-						return;
+					if(判断.可START()){
+						动作.点击START();
+						情况.累计牌桌游戏次数++;
+						状态机.牌桌阶段++;
 					}
-					if(check.canstart()){
-						sm.timeout=0;
-						act.tapstart();
-						st.累计牌桌游戏次数++;
-						sm.deck++;
-					}
-					uo.sleep(uo.deck);
+					自动值守.沉睡(自动值守.牌桌);
 					break;
 				case 1:
-					if(check.canok()){
-						sm.timeout=0;
-						if(!st.每局筹码){
-							st.每局筹码 = read.bet();
+					if(判断.可OK()){
+						if(!情况.每局筹码){
+							情况.每局筹码 = 查阅.桌上筹码();
 						}
-						sout('桌上出现的卡片为:'+read.deck().join(','),2);
-						var 要保持的卡片位置 = ai.keep();
+						显示信息('桌上出现的卡片为:'+查阅.牌桌卡片().join(','),2);
+						var 要保持的卡片位置 = 人工知能.保持卡片();
 						for(var k in 要保持的卡片位置){
-							setTimeout("act['keep'+k+'pos']()",(Math.random()+1)*300);
+							动作['保持第'+k+'张卡']();
 						}
-						act.tapok();
-						sm.deck++;
+						动作.点击OK();
+						状态机.牌桌阶段++;
 					}
-					uo.sleep(uo.deck);
+					自动值守.沉睡(自动值守.牌桌);
 					break;
 				case 2:
-					if(check.canyesno()){
-						sm.timeout=0;
-						act.tapyes();
-						sout('进入双倍',3);
-						sm.deck=0;
-						st.累计双倍游戏次数++;
-						/*if(check.issinglecard()){
-							sout('请手动赌大小！',3);
-							uo.sleep(uo.deck);
-						}else{*/
-							uo.sleep(uo.doub);
-						//}
-					}else if(check.canstart()){
-						sm.timeout=0;
-						sout('失败',3);
-						sm.deck=0;
-						uo.deck();
+					if(判断.可YESNO()){
+						动作.点击YES();
+						显示信息('进入双倍',3);
+						状态机.牌桌阶段=0;
+						情况.累计双倍游戏次数++;
+						自动值守.沉睡(自动值守.双倍);
+					}else if(判断.可START()){
+						显示信息('失败',3);
+						状态机.牌桌阶段=0;
+						自动值守.牌桌();
 					}else{
-						uo.sleep(uo.deck);
+						自动值守.沉睡(自动值守.牌桌);
 					}
-					break;
-				case 3:
-					sm.deck=0;
-					/*if(check.issinglecard()){
-						sout('请手动赌大小！',3);
-						uo.sleep(uo.deck);
-					}else{*/
-						uo.sleep(uo.doub);
-					//}
 					break;
 			}
 		},
-		doub:function(){
-			switch(sm.doubleup){
+		双倍:function(){
+			switch(状态机.双倍阶段){
 				case 0:
-					if(check.canhighlow()){
-						sm.timeout=0;
-						var bs = ai.hol();
-						sm.lastchoice = bs;
-						act['tap'+bs.toLowerCase()]();
-						sm.doubleup++;
+					if(判断.可HIGHLOW()){
+						var 大小 = 人工知能.选择大小();
+						状态机.最后的选择 = 大小;
+						动作['点击'+大小]();
+						状态机.双倍阶段++;
 					}
-					uo.sleep(uo.doub);
+					自动值守.沉睡(自动值守.双倍);
 					break;
 				case 1:
-					if(check.canyesno()){
-						sm.timeout=0;
-						rsamp();
-						rsamp2(1);
-						sout('愉♂悦吧!双赔获胜',4);
-						sm.doubletimes++;
-						if(sm.doubletimes>st.双倍最高回数){
-							st.双倍最高回数=sm.doubletimes;
+					if(判断.可YESNO()){
+						记录样本();
+						显示信息('愉♂悦吧!双赔获胜',4);
+						状态机.双倍累积++;
+						if(状态机.双倍累积>情况.双倍最高回数){
+							情况.双倍最高回数=状态机.双倍累积;
 						}
-						st.累计双倍赌对次数++;
-						gsay('我早就看到是这个结局了，像我这种天才少女怎么可能会有控制不了的概率呢？哦呵呵呵呵～'+nl+'薛定谔自豪地挺了挺胸。虽然她没有。','切！薛定谔在角落里嘟囔了一句。');
-						var cm = read.bet();
-						sout('累计赌对'+sm.doubletimes+'回,当前筹码:'+cm,5);
-						if(av.模式设定[md.pf].赌双倍连续获胜几回合后停止<=sm.doubletimes || av.模式设定[md.pf].赌双倍筹码达到多少后停止<=cm){
-							act.tapno();
-							sm.doubletimes=0;
-							sm.doubleup=0;
-							uo.sleep(uo.deck);
+						情况.累计双倍赌对次数++;
+						薛定谔的结论('我早就看到是这个结局了，像我这种天才少女怎么可能会有控制不了的概率呢？哦呵呵呵呵～\n薛定谔自豪地挺了挺胸。虽然她没有。','切！薛定谔在角落里嘟囔了一句。');
+						var 筹码 = 查阅.桌上筹码();
+						显示信息('累计赌对'+状态机.双倍累积+'回,当前筹码:'+筹码,5);
+						if(参数.模式设定[使用模式].赌双倍连续获胜几回合后停止<=状态机.双倍累积 || 参数.模式设定[使用模式].赌双倍筹码达到多少后停止<=筹码){
+							动作.点击NO();
+							状态机.双倍累积=0;
+							状态机.双倍阶段=0;
+							自动值守.沉睡(自动值守.牌桌);
 							return;
 						}
-						if(ai.yon()){
-							act.tapyes();
-							sm.doubleup=0;
-							uo.sleep(uo.doub);
+						if(人工知能.继续双倍()){
+							动作.点击YES();
+							状态机.双倍阶段=0;
+							自动值守.沉睡(自动值守.双倍);
 						}else{
-							var _=read.bet();
-							act.tapno();
-							sout('收入'+_,5);
-							sm.doubleup=0;
-							sm.doubletimes=0;
-							uo.sleep(uo.deck);
+							var _=查阅.桌上筹码();
+							动作.点击NO();
+							显示信息('收入'+_,5);
+							状态机.双倍阶段=0;
+							状态机.双倍累积=0;
+							自动值守.沉睡(自动值守.牌桌);
 						}
-					}else if(check.canstart()){
-						sm.timeout=0;
-						rsamp();
-						rsamp2(2);
-						if(check.issinglecard()){
-							sout('Holy shit!双倍失败!出现的卡片是:'+read.doub(1),4);
-							st.累计双倍赌错次数++;
-						}else if((sm.lastchoice=='HIGH' && read.doub(1).点数 <= read.doub(2).点数) || (sm.lastchoice!='HIGH' && read.doub(1).点数 >= read.doub(2).点数)){
-							sout('Oh my god!达到回合上限',4);
-							var _=read.bet();
-							gsay('我早就看到是这个结局了，像我这种天才少女怎么可能会有控制不了的概率呢？哦呵呵呵呵～'+nl+'薛定谔自豪地挺了挺胸。虽然她没有。','切！薛定谔在角落里嘟囔了一句。');
-							sout('收入'+_,5);
-							st.累计双倍赌对次数++;
+					}else if(判断.可START()){
+						记录样本();
+						if((状态机.最后的选择=='HIGH' && 查阅.双倍卡片(1).点数 <= 查阅.双倍卡片(2).点数) || (状态机.最后的选择!='HIGH' && 查阅.双倍卡片(1).点数 >= 查阅.双倍卡片(2).点数)){
+							显示信息('Oh my god! 达到回合上限',4);
+							var _=查阅.桌上筹码();
+							薛定谔的结论('我早就看到是这个结局了，像我这种天才少女怎么可能会有控制不了的概率呢？哦呵呵呵呵～\n薛定谔自豪地挺了挺胸。虽然她没有。','切！薛定谔在角落里嘟囔了一句。');
+							显示信息('收入'+_,5);
+							情况.累计双倍赌对次数++;
 						}else{
-							sout('Holy shit!双倍失败!出现的卡片是:'+read.doub(2),4);
-							st.累计双倍赌错次数++;
-							gsay('哇咔咔咔～活该！让你不听天才少女的忠告！'+nl+'薛定谔用非常亲切和蔼地表情对你说道。','这！这不可能！一定是CY使诈！薛定谔愤怒地一拳砸在你的屏幕上。');
+							显示信息('Holy shit! 双倍失败! 出现的卡片是:'+查阅.双倍卡片(2),4);
+							情况.累计双倍赌错次数++;
+							薛定谔的结论('哇咔咔咔～活该！让你不听天才少女的忠告！\n薛定谔用非常亲切和蔼地表情对你说道。','这！这不可能！一定是CY使诈！薛定谔愤怒地一拳砸在你的屏幕上。');
 						}
-						sm.doubleup=0;
-						sm.doubletimes=0;
-						uo.deck();
+						状态机.双倍阶段=0;
+						状态机.双倍累积=0;
+						自动值守.牌桌();
 					}else{
-						uo.sleep(uo.doub);
+						自动值守.沉睡(自动值守.双倍);
 					}
 					break;
 			}
 		}
 	}
-	,boot = function(){
-		if(sm.running){return}
-		st.初始游戏筹码 = read.medal();
-		udeck();
-		var n=new Date().getTime();
-		if(md.st1 && md.st2 && n>md.st1 && n<md.st2){
-			pgo();
-			return;
-		}
-		sst();
-		sm.running=true;
-		uo.sleep(uo.deck);
+	,启动 = function(){
+		if(状态机.运行中){return;}
+		情况.初始游戏筹码 = 查阅.我的筹码();
+		停止时间 = new Date().getTime()+参数.模式设定[使用模式].自动值守不超过几小时*60*60*1000;
+		状态机.运行中=true;
+		自动值守.牌桌();
 	}
-	,sst = function(){
-		var n=new Date().getTime();
-		md.st1 = n+av.模式设定[md.pf].自动值守不超过几小时*60*60*1000;
-		md.st2 = md.st1+(av.模式设定[md.pf].自动值守停止后休息几小时再继续值守+av.模式设定[md.pf].随机增加的休息小时数*Math.random())*60*60*1000;
-		smd();
+	,预约启动 = function(){
+		var 启动时间 = 参数.模式设定[使用模式].自动值守停止后休息几小时再继续值守+参数.模式设定[使用模式].随机增加的休息小时数*Math.random();
+		显示信息('已停止值守，并在'+Math.round(启动时间*10)/10+'小时后重新值守',2);
+		状态机.运行中=false;
+		计时器 = setTimeout(启动,启动时间*60*60*1000);
 	}
-	,pgo = function(){
-		var bt = md.st2 - new Date().getTime();
-		sout('已停止值守，并在'+Math.round(bt/1000/60/6)/10+'小时后重新值守',2);
-		sm.running=false;
-		za = setTimeout(boot,bt);
-	}
-	,stop = function(){
-		clearTimeout(za);
-		sm.running=false;
-	}
-	,cc = $('<div class="wg"><style>.wg{position:absolute;z-index:250001;top:2px;left:2px}.wg button{width:42px;height:22px;margin-right:4px}</style></div>').appendTo(document.body)
-	,cmd3 = $('<button style="width:52px">下局停</button>').appendTo(cc)
-	,cmd1 = $('<button>停止</button>').appendTo(cc)
-	,cmd2 = $('<button>高速</button>').appendTo(cc)
-	,av = {
-		模式设定:[
-			{
-				模式名:'高速模式',
-				样本收集几次后开始使用:20,
-				赌双倍遇到这些点数就不要继续:[],
-				赌双倍连续获胜几回合后进入谨慎状态:7,
-				赌双倍赢筹码达到多少后进入谨慎状态:20000,
-				赌双倍谨慎状态下遇到这些点数就不要继续:[7,8,9],
-				赌双倍连续获胜几回合后停止:12,
-				赌双倍筹码达到多少后停止:200000,
-				允许一站到底:true,
-				本钱大于多少后开始一站到底:50000,
-				样本收集多少份才允许一站到底:30,
-				点击动作延迟几秒:1.5,
-				随机增加的延迟秒数:1,
-				自动值守不超过几小时:3.5,
-				自动值守停止后休息几小时再继续值守:0.5,
-				随机增加的休息小时数:0
-			},
-			{
-				模式名:'安全模式',
-				样本收集几次后开始使用:20,
-				赌双倍遇到这些点数就不要继续:[],
-				赌双倍连续获胜几回合后进入谨慎状态:7,
-				赌双倍赢筹码达到多少后进入谨慎状态:20000,
-				赌双倍谨慎状态下遇到这些点数就不要继续:[7,8,9],
-				赌双倍连续获胜几回合后停止:12,
-				赌双倍筹码达到多少后停止:200000,
-				允许一站到底:true,
-				本钱大于多少后开始一站到底:50000,
-				样本收集多少份才允许一站到底:30,
-				点击动作延迟几秒:2.7,
-				随机增加的延迟秒数:2.7,
-				自动值守不超过几小时:1,
-				自动值守停止后休息几小时再继续值守:0.5,
-				随机增加的休息小时数:0.25
-			}
-		],
-		收集的样本在每天几点时过期:0,
-		样本可信度分母:48,
-		赌双倍的高低分水点数:8,
-		是否在控制台输出信息:true,
-		立即自动值守:true,
-		薛定谔陪你玩:true
+	,停止 = function(){
+		clearTimeout(计时器);
+		状态机.运行中=false;
 	};
-	ca.prototype.toString = function(){if(this.花色!=99){return ['黑桃','红桃','方块','草花'][this.花色-1]+(this.点数>10?['J','Q','K','A'][this.点数-11]:this.点数)}return 'JOKER'};
-	gmd();
-	gsr();
-	gls();
-	gls2();
+	卡片类.prototype.toString = function(){if(this.花色!=99){return ['黑桃','红桃','方块','草花'][this.花色-1]+(this.点数>10?['J','Q','K','A'][this.点数-11]:this.点数)}return 'JOKER'}
+	生成概率();
+	从本地存储中读取样本();
 	window.wg={};
 	Object.defineProperties(wg,{
-		debug:{get:dbg},
-		启动:{get:boot},
-		停止:{get:stop},
-		情况:{get:sstat},
-		样本:{get:ssamp}
+		启动:{get:启动},
+		停止:{get:停止},
+		情况:{get:显示情况},
+		样本:{get:显示样本}
 	});
-	if(av.立即自动值守){
-		boot();
+	if(参数.立即自动值守){
+		启动();
 	}
-	if(md.pf==1){
-		cmd2.text('安全');
-	}
-	cmd1.on(et,function(){
-		if(cmd1.text()=='停止'){
-			cmd1.text('启动');
-			stop();
-		}else{
-			cmd1.text('停止');
-			boot();
+	return '进入'+参数.模式设定[使用模式].模式名;
+})({
+	模式设定:[
+		{
+			模式名:'稳妥模式',
+			样本收集几次后开始使用:7,
+			赌双倍遇到这些点数就不要继续:[8],
+			赌双倍连续获胜几回合后进入谨慎状态:8,
+			赌双倍胜筹码达到多少后进入谨慎状态:10000,
+			赌双倍谨慎状态下遇到这些点数就不要继续:[6,7,8,9,10],
+			赌双倍连续获胜几回合后停止:20,
+			赌双倍筹码达到多少后停止:1500000,
+			允许一站到底:false,
+			本钱大于多少后开始一站到底:500000,
+			样本收集多少份才允许一站到底:30,
+			点击动作延迟几秒:1.5,
+			随机增加的延迟秒数:1,
+			自动值守不超过几小时:5,
+			自动值守停止后休息几小时再继续值守:0,
+			随机增加的休息小时数:0
+		},
+		{
+			模式名:'双倍赌到底模式',
+			样本收集几次后开始使用:15,
+			赌双倍遇到这些点数就不要继续:[],
+			赌双倍连续获胜几回合后进入谨慎状态:20,
+			赌双倍胜筹码达到多少后进入谨慎状态:20000,
+			赌双倍谨慎状态下遇到这些点数就不要继续:[7,8,9],
+			赌双倍连续获胜几回合后停止:20,
+			赌双倍筹码达到多少后停止:1500000,
+			允许一站到底:true,
+			本钱大于多少后开始一站到底:50000,
+			样本收集多少份才允许一站到底:30,
+			点击动作延迟几秒:1.5,
+			随机增加的延迟秒数:1,
+			自动值守不超过几小时:5,
+			自动值守停止后休息几小时再继续值守:0.34,
+			随机增加的休息小时数:0.21
+		},
+		{
+			模式名:'挂机模式',
+			样本收集几次后开始使用:9,
+			赌双倍遇到这些点数就不要继续:[],
+			赌双倍连续获胜几回合后进入谨慎状态:20,
+			赌双倍胜筹码达到多少后进入谨慎状态:20000,
+			赌双倍谨慎状态下遇到这些点数就不要继续:[7,8,9],
+			赌双倍连续获胜几回合后停止:20,
+			赌双倍筹码达到多少后停止:1500000,
+			允许一站到底:true,
+			本钱大于多少后开始一站到底:50000,
+			样本收集多少份才允许一站到底:30,
+			点击动作延迟几秒:2,
+			随机增加的延迟秒数:5,
+			自动值守不超过几小时:1.5,
+			自动值守停止后休息几小时再继续值守:1.5,
+			随机增加的休息小时数:0.5
+		},
+		{
+			模式名:'双开模式',
+			样本收集几次后开始使用:9,
+			赌双倍遇到这些点数就不要继续:[],
+			赌双倍连续获胜几回合后进入谨慎状态:20,
+			赌双倍胜筹码达到多少后进入谨慎状态:20000,
+			赌双倍谨慎状态下遇到这些点数就不要继续:[7,8,9],
+			赌双倍连续获胜几回合后停止:20,
+			赌双倍筹码达到多少后停止:1500000,
+			允许一站到底:true,
+			本钱大于多少后开始一站到底:50000,
+			样本收集多少份才允许一站到底:30,
+			点击动作延迟几秒:3,
+			随机增加的延迟秒数:3,
+			自动值守不超过几小时:5,
+			自动值守停止后休息几小时再继续值守:0,
+			随机增加的休息小时数:0
 		}
-	});
-	cmd2.on(et,function(){
-		if(cmd2.text()=='高速'){
-			cmd2.text('安全');
-			md.pf=1;
-			sst();
-		}else{
-			cmd2.text('高速');
-			md.pf=0;
-			sst();
-		}
-		sout('切换至'+av.模式设定[md.pf].模式名);
-	});
-	cmd3.on(et,function(){
-		if(sm.running){
-			cmd3.text('知道啦');
-			ds = true;
-		}
-	});
-	return '进入'+av.模式设定[md.pf].模式名;
-})();
+	],
+	收集的样本在每天几点时过期:4,
+	样本可信度分母:48,
+	赌双倍的高低分水点数:8,
+	是否在控制台输出信息:true,
+	立即自动值守:true,
+	薛定谔陪你玩:true
+},1);
