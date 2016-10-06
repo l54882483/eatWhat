@@ -96,11 +96,11 @@
 		tapno:function(){sout('点击NO',1);udo();tp('.prt-no')},
 		taphigh:function(){sout('点击HIGH',1);udo();tp('.prt-double-select[select=high]')},
 		taplow:function(){sout('点击LOW',1);udo();tp('.prt-double-select[select=low]')},
-		keep1pos:function(){sout('保持第1张卡',1);var blocker=setTimeout(tapfix(1),Math.round(Math.random()*1000))},
-		keep2pos:function(){sout('保持第2张卡',1);var blocker=setTimeout(tapfix(2),Math.round(Math.random()*1000))},
-		keep3pos:function(){sout('保持第3张卡',1);var blocker=setTimeout(tapfix(3),Math.round(Math.random()*1000))},
-		keep4pos:function(){sout('保持第4张卡',1);var blocker=setTimeout(tapfix(4),Math.round(Math.random()*1000))},
-		keep5pos:function(){sout('保持第5张卡',1);var blocker=setTimeout(tapfix(5),Math.round(Math.random()*1000))}
+		keep1pos:function(){sout('保持第1张卡',1);var blocker=setTimeout(tapfix(1),1000)},
+		keep2pos:function(){sout('保持第2张卡',1);var blocker=setTimeout(tapfix(2),1000)},
+		keep3pos:function(){sout('保持第3张卡',1);var blocker=setTimeout(tapfix(3),1000)},
+		keep4pos:function(){sout('保持第4张卡',1);var blocker=setTimeout(tapfix(4),1000)},
+		keep5pos:function(){sout('保持第5张卡',1);var blocker=setTimeout(tapfix(5),1000)}
 	}  //模拟点击动作
 	,ai = {
 		keep:function(){
