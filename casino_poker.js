@@ -1,20 +1,20 @@
 (function(){
-	var za
+	var 计时器
 	,ds = false
 	,et = 'ontouchstart' in window ? 'touchstart' : 'mousedown'
 	,md = {ver:1,pf:0,st1:null,st2:null}
 	,nl = '\n'
-	,zc = ['color:#000000','color:#307730','color:#AAAAAA','color:white; background-color:#77A8F3','color:white; background-color:#0055CC','color:white; background-color:#B03939']
-	,sout = function(inf,sty){if(!av.是否在控制台输出信息){sout=function(){};return}console.info('%c'+inf,zc[~~sty])}
-	,tp = function(sel){$(sel).trigger('tap')}
-	,tz = function(sel){var _=$('div',sel),__=_.size()-1,___=0;_.each(function(i,____){___+=~~____.className.split('_')[1]*Math.pow(10,__-i)});return ___}
-	,ce = function(en){$('#canv').trigger(en)}
-	,ce2 = function(b){exportRoot["card_" + b + "_select"]=1}
-	,pc = function(fn){return Math.round(fn*10000)/100+'%'}
-	,iv = function(sel){return $(sel).is(':visible')}
+	,zc = ['color:#000000','color:#307730','color:#AAAAAA','color:white; background-color:#77A8F3','color:white; background-color:#0055CC','color:white; background-color:#B03939'] //样式定义
+	,sout = function(inf,sty){if(!av.是否在控制台输出信息){sout=function(){};return}console.info('%c'+inf,zc[~~sty])} //显示信息
+	,tp = function(sel){$(sel).trigger('tap')}  //触碰元素
+	,tz = function(sel){var _=$('div',sel),__=_.size()-1,___=0;_.each(function(i,____){___+=~~____.className.split('_')[1]*Math.pow(10,__-i)});return ___} //图字转换
+	,ce = function(en){$('#canv').trigger(en)} //画布事件
+	,ce2 = function(b){exportRoot["card_" + b + "_select"]=1} //画布事件2
+	,pc = function(fn){return Math.round(fn*10000)/100+'%'}  //转化百分数
+	,iv = function(sel){return $(sel).is(':visible')}  //是否显示
 	,ih = function(tex){return $('.prt-navigation').text()==tex}
-	,sstat = function(){var _=[],__=read.medal();for(var k in st){_.push(k+': '+st[k])}_.push('现在游戏筹码: '+__);_.push('累计筹码收益: '+(__-st.初始游戏筹码));console.info(_.join(''+nl+''))}
-	,gsay = function(sor,sow){if(sm.gchoice!=''){if((sm.gchoice=='大' && read.doub(1).点数 < read.doub(2).点数) || (sm.gchoice!='大' && read.doub(1).点数 > read.doub(2).点数)){st.薛定谔猜对次数++;sout(sor)}else{st.薛定谔猜错次数++;sout(sow)}sm.gchoice=''}}
+	,sstat = function(){var _=[],__=read.medal();for(var k in st){_.push(k+': '+st[k])}_.push('现在游戏筹码: '+__);_.push('累计筹码收益: '+(__-st.初始游戏筹码));console.info(_.join(''+nl+''))}  //显示现况
+	,gsay = function(sor,sow){if(sm.gchoice!=''){if((sm.gchoice=='大' && read.doub(1).点数 < read.doub(2).点数) || (sm.gchoice!='大' && read.doub(1).点数 > read.doub(2).点数)){st.薛定谔猜对次数++;sout(sor)}else{st.薛定谔猜错次数++;sout(sow)}sm.gchoice=''}}  //薛定谔的结论
 	,sm = {
 		running:false,
 		timeout:0,
@@ -23,7 +23,7 @@
 		doubletimes:0,
 		lastchoice:'',
 		gchoice:''
-	}
+	}  //状态机
 	,st = {
 		脚本启动时间:new Date().toLocaleString(),
 		最后一次操作:'未操作',
@@ -36,47 +36,47 @@
 		薛定谔猜对次数:0,
 		薛定谔猜错次数:0,
 		初始游戏筹码:0
-	}
+	}  //情况
 	,dbg = function(){console.debug(sm)}
 	,gdeck = function(){if(check.canstart()){return [0,0]}else if(check.canok()){return [1,0]}else if(check.candoubleup()){return [2,0]}else if(check.canhighlow()){return [3,0]}else if(check.canyesno()){return [3,1]}}
 	,udeck = function(){var _=gdeck();if(_){sm.deck=_[0];sm.doubleup=_[1]}else{sout('Oh my god!你可能不在打牌界面。',2)}}
-	,udo = function(){st.最后一次操作=new Date().toLocaleString()}
-	,rt = {}
+	,udo = function(){st.最后一次操作=new Date().toLocaleString()}  //更新操作记录
+	,rt = {}  //概率
 	,gsr = function(){for(var p=2;p<=14;p++){
 		rt[p]={小:(p-2)/12,大:1-(p-2)/12}
-	}}
-	,sp = {过期时间:0,数据:{}}
+	}}  //生成概率
+	,sp = {过期时间:0,数据:{}} //样本
 	,sp2 = {过期时间:0,数据:[]}
-	,ssamp = function(){var _={},_2={};for(var k in sp.数据){var __=sp.数据[k],___=sampr(k),_____={};for(var k2 in __){_____[k2]=__[k2]}_____.可信度=pc(___.可信度),_____.出大概率=pc(___.大),_____.出大基准=pc(rt[k].大),_____.出小概率=pc(___.小),_____.出小基准=pc(rt[k].小);_[k]=_____}for(var i=0;i<sp2.数据.length;i++){_2[i]={出小次数:sp2.数据[i][0],出大次数:sp2.数据[i][1],正确次数:sp2.数据[i][2],错误次数:sp2.数据[i][3]}}console.info('双卡模式:');console.table(_);console.info('无限模式:');console.table(_2);return '样本过期时间: '+new Date(sp.过期时间).toLocaleString()}
-	,gsamp = function(p){sp.数据[p]={总:0,大:0,小:0,平:0}}
-	,gls = function(){var _=localStorage['wg_casino_poker_samples'];if(_){sp=JSON.parse(_)}}
+	,ssamp = function(){var _={},_2={};for(var k in sp.数据){var __=sp.数据[k],___=sampr(k),_____={};for(var k2 in __){_____[k2]=__[k2]}_____.可信度=pc(___.可信度),_____.出大概率=pc(___.大),_____.出大基准=pc(rt[k].大),_____.出小概率=pc(___.小),_____.出小基准=pc(rt[k].小);_[k]=_____}for(var i=0;i<sp2.数据.length;i++){_2[i]={出小次数:sp2.数据[i][0],出大次数:sp2.数据[i][1],正确次数:sp2.数据[i][2],错误次数:sp2.数据[i][3]}}console.info('双卡模式:');console.table(_);console.info('无限模式:');console.table(_2);return '样本过期时间: '+new Date(sp.过期时间).toLocaleString()}  //显示样本
+	,gsamp = function(p){sp.数据[p]={总:0,大:0,小:0,平:0}}  //创建样本
+	,gls = function(){var _=localStorage['wg_casino_poker_samples'];if(_){sp=JSON.parse(_)}}  //读样本
 	,gls2 = function(){var _=localStorage['wg_casino_poker_samples2'];if(_){sp2=JSON.parse(_)}}
-	,sls = function(){localStorage['wg_casino_poker_samples']=JSON.stringify(sp)}
+	,sls = function(){localStorage['wg_casino_poker_samples']=JSON.stringify(sp)}  //写样本回本地存储
 	,sls2 = function(){localStorage['wg_casino_poker_samples2']=JSON.stringify(sp2)}
-	,gmd = function(){var _=localStorage['wg_casino_poker_config'];if(_){_=JSON.parse(_);if(_.ver==md.ver){md=_;return;}}smd()}
-	,smd = function(){localStorage['wg_casino_poker_config']=JSON.stringify(md)}
-	,cst = function(){if(new Date().getTime()>sp.过期时间){var _=new Date();if(_.getHours()>=av.收集的样本在每天几点时过期){_=new Date(_.getTime()+24*60*60*1000)}_.setHours(av.收集的样本在每天几点时过期),_.setMinutes(0),_.setSeconds(0),_.setMilliseconds(0);sp={过期时间:_.getTime(),数据:{}}}}
+	,gmd = function(){var _=localStorage['wg_casino_poker_config'];if(_){_=JSON.parse(_);if(_.ver==md.ver){md=_;return;}}smd()}  //读取配置
+	,smd = function(){localStorage['wg_casino_poker_config']=JSON.stringify(md)}  //保存配置
+	,cst = function(){if(new Date().getTime()>sp.过期时间){var _=new Date();if(_.getHours()>=av.收集的样本在每天几点时过期){_=new Date(_.getTime()+24*60*60*1000)}_.setHours(av.收集的样本在每天几点时过期),_.setMinutes(0),_.setSeconds(0),_.setMilliseconds(0);sp={过期时间:_.getTime(),数据:{}}}}  //检查样本是否过期
 	,cst2 = function(){if(new Date().getTime()>sp2.过期时间){var _=new Date();if(_.getHours()>=av.收集的样本在每天几点时过期){_=new Date(_.getTime()+24*60*60*1000)}_.setHours(av.收集的样本在每天几点时过期),_.setMinutes(0),_.setSeconds(0),_.setMilliseconds(0);sp2={过期时间:_.getTime(),数据:[]}}}
-	,rsamp = function(){if(check.issinglecard()){return};cst();var p=read.doub(1).点数,r=read.doub(2).点数;if(!(p in sp.数据)){gsamp(p)}sp.数据[p].总++;if(r>p){sp.数据[p].大++}else if(r<p){sp.数据[p].小++}else{sp.数据[p].平++}sls()}
+	,rsamp = function(){if(check.issinglecard()){return};cst();var p=read.doub(1).点数,r=read.doub(2).点数;if(!(p in sp.数据)){gsamp(p)}sp.数据[p].总++;if(r>p){sp.数据[p].大++}else if(r<p){sp.数据[p].小++}else{sp.数据[p].平++}sls()}  //记录样本
 	,rsamp2 = function(r){if(!check.issinglecard()){return};cst2();var c=read.doub(1).点数,i=sm.doubletimes;if(!sp2.数据[i]){sp2.数据[i]=[0,0,0,0]}sp2.数据[i][r+1]++;if(c==99 || c==14){sls2();return}if(c>=8){sp2.数据[i][1]++}else{sp2.数据[i][0]++}sls2()}
-	,sampr = function(p){var _=sp.数据[p];if(_.总-_.平==0){return null}_=_.小/(_.总-_.平);return {小:_,大:1-_,可信度:Math.min(1,sp.数据[p].总/av.样本可信度分母)}}
+	,sampr = function(p){var _=sp.数据[p];if(_.总-_.平==0){return null}_=_.小/(_.总-_.平);return {小:_,大:1-_,可信度:Math.min(1,sp.数据[p].总/av.样本可信度分母)}}  //样本概率
 	,ca = function(raw,pos){
 		var _ = raw.split('_');
 		this.花色 = ~~_[0];
 		this.点数 = ~~_[1];
 		if(this.点数==1){this.点数=14}
 		this.位置 = pos+1;
-	}
+	}  //卡片类
 	,co = {
 		conv:function(raw){return raw.map(function(v,i){return new ca(v,i)})},
 		sort:function(ar,pr){for(var i=0,l=ar.length;i<l;i++){for(var j=i+1;j<l;j++){if(ar[i][pr]>ar[j][pr]){var _=ar[j];ar[j]=ar[i];ar[i]=_}}}}
-	}
+	}  //牌组操作
 	,read = {
 		deck:function(){return co.conv(cards_1_Array)},
 		doub:function(i){return new ca(window['doubleUp_card_'+i],0)},
 		bet:function(){return tz('.prt-bet')},
 		medal:function(){return tz('.prt-medal')}
-	}
+	}  //查阅
 	,check = {
 		canstart:function(){return iv('.prt-start')},
 		canok:function(){return iv('.prt-ok')},
@@ -84,6 +84,10 @@
 		canhighlow:function(){return iv('.prt-double-select')},
 		candoubleup:function(){return ih('ダブルアップに挑戦しますか？')},
 		issinglecard:function(){return Game.view.doubleKind=='1'}
+	}  //判断
+	,tapfix = function(w2s){
+		ce('set'+w2s);
+		ce2(w2s);
 	}
 	,act = {
 		tapstart:function(){sout('点击START',1);udo();tp('.prt-start')},
@@ -92,12 +96,12 @@
 		tapno:function(){sout('点击NO',1);udo();tp('.prt-no')},
 		taphigh:function(){sout('点击HIGH',1);udo();tp('.prt-double-select[select=high]')},
 		taplow:function(){sout('点击LOW',1);udo();tp('.prt-double-select[select=low]')},
-		keep1pos:function(){sout('保持第1张卡',1);ce('set1');ce2(1)},
-		keep2pos:function(){sout('保持第2张卡',1);ce('set2');ce2(2)},
-		keep3pos:function(){sout('保持第3张卡',1);ce('set3');ce2(3)},
-		keep4pos:function(){sout('保持第4张卡',1);ce('set4');ce2(4)},
-		keep5pos:function(){sout('保持第5张卡',1);ce('set5');ce2(5)}
-	}
+		keep1pos:function(){sout('保持第1张卡',1);var blocker=setTimeout(tapfix(1),Math.round(Math.random()*1000))},
+		keep2pos:function(){sout('保持第2张卡',1);var blocker=setTimeout(tapfix(2),Math.round(Math.random()*1000))},
+		keep3pos:function(){sout('保持第3张卡',1);var blocker=setTimeout(tapfix(3),Math.round(Math.random()*1000))},
+		keep4pos:function(){sout('保持第4张卡',1);var blocker=setTimeout(tapfix(4),Math.round(Math.random()*1000))},
+		keep5pos:function(){sout('保持第5张卡',1);var blocker=setTimeout(tapfix(5),Math.round(Math.random()*1000))}
+	}  //模拟点击动作
 	,ai = {
 		keep:function(){
 			var ar = read.deck();
@@ -244,7 +248,7 @@
 			}
 			return true;
 		}
-	}
+	}  //选牌决策具体逻辑
 	,uo = {
 		sleep:function(caf){
 			if(sm.timeout++>20){
@@ -253,7 +257,7 @@
 			var slt=av.模式设定[md.pf].点击动作延迟几秒+Math.random()*av.模式设定[md.pf].随机增加的延迟秒数;
 			sout('Relax! 我只睡'+Math.round(slt*10)/10+'秒',2);
 			$('.btn-usual-ok:visible').trigger('tap');
-			za=setTimeout(caf,slt*1000)
+			计时器=setTimeout(caf,slt*1000)
 		},
 		deck:function(){
 			switch(sm.deck){
@@ -398,7 +402,7 @@
 					break;
 			}
 		}
-	}
+	}  //自动值守
 	,boot = function(){
 		if(sm.running){return}
 		st.初始游戏筹码 = read.medal();
@@ -411,7 +415,7 @@
 		sst();
 		sm.running=true;
 		uo.sleep(uo.deck);
-	}
+	}  //启动
 	,sst = function(){
 		var n=new Date().getTime();
 		md.st1 = n+av.模式设定[md.pf].自动值守不超过几小时*60*60*1000;
@@ -422,10 +426,10 @@
 		var bt = md.st2 - new Date().getTime();
 		sout('已停止值守，并在'+Math.round(bt/1000/60/6)/10+'小时后重新值守',2);
 		sm.running=false;
-		za = setTimeout(boot,bt);
-	}
+		计时器 = setTimeout(boot,bt);
+	}  //预约启动
 	,stop = function(){
-		clearTimeout(za);
+		clearTimeout(计时器);
 		sm.running=false;
 	}
 	,cc = $('<div class="wg"><style>.wg{position:absolute;z-index:250001;top:2px;left:2px}.wg button{width:42px;height:22px;margin-right:4px}</style></div>').appendTo(document.body)
@@ -439,12 +443,12 @@
 				样本收集几次后开始使用:20,
 				赌双倍遇到这些点数就不要继续:[],
 				赌双倍连续获胜几回合后进入谨慎状态:7,
-				赌双倍赢筹码达到多少后进入谨慎状态:20000,
+				赌双倍赢筹码达到多少后进入谨慎状态:100000,
 				赌双倍谨慎状态下遇到这些点数就不要继续:[7,8,9],
 				赌双倍连续获胜几回合后停止:12,
-				赌双倍筹码达到多少后停止:200000,
+				赌双倍筹码达到多少后停止:1500000,
 				允许一站到底:true,
-				本钱大于多少后开始一站到底:50000,
+				本钱大于多少后开始一站到底:500000,
 				样本收集多少份才允许一站到底:30,
 				点击动作延迟几秒:1.5,
 				随机增加的延迟秒数:1,
@@ -457,12 +461,12 @@
 				样本收集几次后开始使用:20,
 				赌双倍遇到这些点数就不要继续:[],
 				赌双倍连续获胜几回合后进入谨慎状态:7,
-				赌双倍赢筹码达到多少后进入谨慎状态:20000,
+				赌双倍赢筹码达到多少后进入谨慎状态:100000,
 				赌双倍谨慎状态下遇到这些点数就不要继续:[7,8,9],
 				赌双倍连续获胜几回合后停止:12,
-				赌双倍筹码达到多少后停止:200000,
+				赌双倍筹码达到多少后停止:1500000,
 				允许一站到底:true,
-				本钱大于多少后开始一站到底:50000,
+				本钱大于多少后开始一站到底:500000,
 				样本收集多少份才允许一站到底:30,
 				点击动作延迟几秒:2,
 				随机增加的延迟秒数:2,
