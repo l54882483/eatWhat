@@ -85,7 +85,7 @@
 		candoubleup:function(){return ih('ダブルアップに挑戦しますか？')},
 		issinglecard:function(){return Game.view.doubleKind=='1'}
 	}  //判断
-	,tapfix = function(w2s){
+	,tapfix : function(w2s){
 		ce('set'+w2s);
 		ce2(w2s);
 	}
